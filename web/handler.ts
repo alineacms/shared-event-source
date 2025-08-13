@@ -1,6 +1,12 @@
-const clients = new Set<{controller: ReadableStreamDefaultController}>()
+declare global {
+  var clients:
+    | Set<{controller: ReadableStreamDefaultController<string>}>
+    | undefined
+}
 
 export async function handler(request: Request): Promise<Response> {
+  globalThis.clients ??= new Set()
+  const clients = globalThis.clients
   const url = new URL(request.url)
 
   if (url.pathname === '/sse') {
@@ -28,7 +34,7 @@ export async function handler(request: Request): Promise<Response> {
     } else if (request.method === 'POST') {
       const body = JSON.parse(await request.text())
       for (const client of clients) {
-        ;(client as any).controller.enqueue(`data: ${JSON.stringify(body)}\n\n`)
+        client.controller.enqueue(`data: ${JSON.stringify(body)}\n\n`)
       }
       return new Response('Event sent', {status: 200})
     }
