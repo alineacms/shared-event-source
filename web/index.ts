@@ -3,13 +3,7 @@ import {SharedEventSource} from '../src/index.ts'
 if (!('serviceWorker' in navigator))
   throw new Error('❌ Service Workers are not supported in this browser.')
 
-await new Promise((resolve, reject) => {
-  // Use the window load event to keep it from delaying page rendering
-  window.addEventListener('load', () => {
-    // Register the service worker. The path is relative to the origin.
-    navigator.serviceWorker.register('/sw.js').then(resolve).catch(reject)
-  })
-}).catch(error => {
+await navigator.serviceWorker.register('/sw.js').catch(error => {
   console.warn('❌ Service Worker registration failed:', error)
 })
 
