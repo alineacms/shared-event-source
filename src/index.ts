@@ -92,7 +92,6 @@ export class SharedEventSource extends EventTarget {
     if (this.readyState === SharedEventSource.CLOSED) {
       return
     }
-    console.log(`[${this.#id}] Closing connection.`)
     this.readyState = SharedEventSource.CLOSED
     this.#broadcast({type: 'client-remove', payload: {id: this.#id}})
     this.#cleanup()
@@ -107,20 +106,14 @@ export class SharedEventSource extends EventTarget {
     const lockName = `eventsource-leader-lock:${this.url}`
 
     navigator.locks.request(lockName, async () => {
-      // This callback only runs when the lock is acquired. This tab is now the leader.
       this.isLeader = true
-      console.log(`[${this.#id}] Became leader.`)
 
       this.#setupLeader()
 
-      // The lock is held as long as this promise is pending. We create a promise
-      // that will only resolve when the leader instance is ready to shut down.
       await new Promise<void>(resolve => {
         this.#lockReleaseResolver = resolve
       })
 
-      // When the promise resolves, the lock is released.
-      console.log(`[${this.#id}] Releasing leader lock.`)
       this.isLeader = false
       this.#realEventSource?.close()
       this.#realEventSource = null
@@ -140,7 +133,6 @@ export class SharedEventSource extends EventTarget {
     })
 
     this.#realEventSource.onopen = () => {
-      console.log(`[${this.#id}] Leader connection opened.`)
       this.readyState = SharedEventSource.OPEN // Update readyState to OPEN
       this.#broadcast({type: 'event-open'})
     }
@@ -157,7 +149,7 @@ export class SharedEventSource extends EventTarget {
     }
 
     this.#realEventSource.onerror = () => {
-      console.error(`[${this.#id}] Leader connection error.`)
+      this.readyState = SharedEventSource.CLOSED // Update readyState to CLOSED
       this.#broadcast({type: 'event-error'})
     }
   }
@@ -169,40 +161,26 @@ export class SharedEventSource extends EventTarget {
   #handleBroadcastMessage(event: MessageEvent<BroadcastMessage>): void {
     const {type, payload} = event.data
 
-    // --- Leader-specific message handling ---
     if (this.isLeader) {
       if (type === 'client-add') {
         this.#clients.add(payload.id)
-        console.log(
-          `[${this.#id}] Leader saw new client: ${payload.id}. Total: ${this.#clients.size}`
-        )
-        // If the connection is already open, inform the new client immediately.
         if (this.#realEventSource?.readyState === EventSource.OPEN) {
           this.#broadcast({type: 'event-open'})
         }
       } else if (type === 'client-remove') {
         this.#clients.delete(payload.id)
-        console.log(
-          `[${this.#id}] Leader saw client leave: ${payload.id}. Total: ${this.#clients.size}`
-        )
-        // If the last client leaves, the leader closes the connection and releases the lock.
         if (this.#clients.size === 0) {
-          console.log(
-            `[${this.#id}] Last client left. Leader is shutting down.`
-          )
           this.close()
         }
       }
     }
 
-    // --- Global message handling for all instances (leader and followers) ---
     switch (type) {
       case 'event-open':
         this.readyState = SharedEventSource.OPEN
         this.dispatchEvent(new Event('open'))
         break
       case 'event-message':
-        // Reconstruct the MessageEvent to be dispatched locally.
         this.dispatchEvent(new MessageEvent('message', payload))
         break
       case 'event-error':

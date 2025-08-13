@@ -71,3 +71,10 @@ sendEventButton.addEventListener('click', () => {
     })
   }
 })
+
+// Add a close button to the UI
+const closeButton = document.getElementById('close-event-source')!
+closeButton.addEventListener('click', () => {
+  eventSource.close()
+  console.log('EventSource connection closed')
+})
