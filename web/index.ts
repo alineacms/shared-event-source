@@ -1,12 +1,5 @@
 import {SharedEventSource} from '../src/index.ts'
 
-if (!('serviceWorker' in navigator))
-  throw new Error('❌ Service Workers are not supported in this browser.')
-
-await navigator.serviceWorker.register('/sw.js').catch(error => {
-  console.warn('❌ Service Worker registration failed:', error)
-})
-
 const eventSource = new SharedEventSource('/sse')
 
 const tabStatus = document.getElementById('tab-status')!
