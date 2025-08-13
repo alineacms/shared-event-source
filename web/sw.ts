@@ -6,7 +6,13 @@ declare let self: ServiceWorkerGlobalScope
 self.addEventListener('fetch', event => {
   const {request} = event
   const url = new URL(request.url)
-  if (url.pathname === '/sse') event.respondWith(handler(event.request))
+  if (url.pathname !== '/sse') return
+  event.respondWith(handler(event.request))
+  event.waitUntil(
+    new Promise(resolve => {
+      setTimeout(resolve, 30_000)
+    })
+  )
 })
 
 // Force the waiting service worker to become the active service worker.

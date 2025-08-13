@@ -8,10 +8,5 @@ serve({
     '/': index
   },
   idleTimeout: 0,
-  async fetch(request) {
-    const response = await handler(request)
-    if (typeof response === 'boolean')
-      throw new Error('No handler for root path')
-    return response
-  }
+  fetch: handler
 })
