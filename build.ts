@@ -2,7 +2,7 @@
 import {build} from 'bun'
 
 await build({
-  entrypoints: ['./web/index.html', './web/sw.ts'],
+  entrypoints: ['./web/index.html'],
   outdir: './out'
 })
 
