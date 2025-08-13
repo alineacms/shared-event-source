@@ -141,6 +141,7 @@ export class SharedEventSource extends EventTarget {
 
     this.#realEventSource.onopen = () => {
       console.log(`[${this.#id}] Leader connection opened.`)
+      this.readyState = SharedEventSource.OPEN // Update readyState to OPEN
       this.#broadcast({type: 'event-open'})
     }
 
@@ -216,6 +217,13 @@ export class SharedEventSource extends EventTarget {
    */
   #broadcast(message: BroadcastMessage): void {
     this.#channel.postMessage(message)
+
+    // Process the message locally if this instance is the leader.
+    if (this.isLeader) {
+      this.#handleBroadcastMessage({
+        data: message
+      } as MessageEvent<BroadcastMessage>)
+    }
   }
 
   /**
