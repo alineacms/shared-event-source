@@ -16,6 +16,7 @@ eventSource.onopen = () => {
 
 eventSource.onmessage = event => {
   const li = document.createElement('li')
+  console.log(event)
   li.textContent = `Received: ${event.data}`
   eventsList.appendChild(li)
 }
