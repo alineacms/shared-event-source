@@ -11,6 +11,9 @@
   "peerDependencies": {
     "typescript": "^5"
   },
+  "scripts": {
+    "build": "tsc && bun build.ts"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
