@@ -26,23 +26,24 @@ const noop: any = Function.prototype
  */
 export class SharedEventSource extends EventTarget {
   // Public properties mimicking the EventSource interface
-  public readonly url: string
-  public readonly withCredentials: boolean
-  public readyState: 0 | 1 | 2
+  readonly url: string
+  readonly withCredentials: boolean
+  readyState: 0 | 1 | 2
 
-  public onerror: (event: ErrorEvent) => any = noop
-  public onmessage: (event: MessageEvent) => any = noop
-  public onopen: (event: Event) => any = noop
+  onerror: (event: ErrorEvent) => any = noop
+  onmessage: (event: MessageEvent) => any = noop
+  onopen: (event: Event) => any = noop
 
   // Constants for readyState
-  public static readonly CONNECTING = 0
-  public static readonly OPEN = 1
-  public static readonly CLOSED = 2
+  static readonly CONNECTING = 0
+  static readonly OPEN = 1
+  static readonly CLOSED = 2
+
+  isLeader = false
 
   // Private properties for internal state management
   readonly #id: string
   readonly #channel: BroadcastChannel
-  #isLeader = false
   #realEventSource: EventSource | null = null
   #clients = new Set<string>()
   #lockReleaseResolver: (() => void) | null = null
@@ -107,7 +108,7 @@ export class SharedEventSource extends EventTarget {
 
     navigator.locks.request(lockName, async () => {
       // This callback only runs when the lock is acquired. This tab is now the leader.
-      this.#isLeader = true
+      this.isLeader = true
       console.log(`[${this.#id}] Became leader.`)
 
       this.#setupLeader()
@@ -120,7 +121,7 @@ export class SharedEventSource extends EventTarget {
 
       // When the promise resolves, the lock is released.
       console.log(`[${this.#id}] Releasing leader lock.`)
-      this.#isLeader = false
+      this.isLeader = false
       this.#realEventSource?.close()
       this.#realEventSource = null
     })
@@ -168,7 +169,7 @@ export class SharedEventSource extends EventTarget {
     const {type, payload} = event.data
 
     // --- Leader-specific message handling ---
-    if (this.#isLeader) {
+    if (this.isLeader) {
       if (type === 'client-add') {
         this.#clients.add(payload.id)
         console.log(

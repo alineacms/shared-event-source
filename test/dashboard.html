@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SharedEventSource Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      .leader {
+        color: green;
+        font-weight: bold;
+      }
+      .follower {
+        color: gray;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>SharedEventSource Test</h1>
+    <p>Tab Status: <span id="tab-status" class="follower">Follower</span></p>
+    <button id="send-event">Send Event</button>
+    <ul id="events"></ul>
+
+    <script type="module" src="./dashboard.ts"></script>
+  </body>
+</html>
