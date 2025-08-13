@@ -1,6 +1,6 @@
 {
   "name": "shared-event-source",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "repository": "alineacms/shared-event-source",
   "module": "index.ts",
   "type": "module",
@@ -10,7 +10,8 @@
     "typescript": "^5"
   },
   "scripts": {
-    "build": "tsc && bun build.ts"
+    "build": "tsc && bun build.ts",
+    "prepublishOnly": "bun run build"
   },
   "files": [
     "dist",
