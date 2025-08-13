@@ -1,6 +1,6 @@
 {
   "name": "shared-event-source",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "repository": "alineacms/shared-event-source",
   "module": "index.ts",
   "type": "module",
