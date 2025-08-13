@@ -63,7 +63,7 @@ sendEventButton.addEventListener('click', () => {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({message})
+      body: JSON.stringify(message)
     }).then(response => {
       if (!response.ok) {
         console.error('Failed to send message')

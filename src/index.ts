@@ -206,6 +206,7 @@ export class SharedEventSource extends EventTarget {
         this.dispatchEvent(new MessageEvent('message', payload))
         break
       case 'event-error':
+        this.readyState = SharedEventSource.CLOSED
         this.dispatchEvent(new Event('error'))
         break
     }

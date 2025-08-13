@@ -25,7 +25,11 @@ export async function handler(request: Request): Promise<Response> {
     } else if (request.method === 'POST') {
       const body = JSON.parse(await request.text())
       for (const controller of connectedClients) {
-        controller.enqueue(`data: ${JSON.stringify(body)}\n\n`)
+        if (body === 'close') {
+          controller.close()
+        } else {
+          controller.enqueue(`data: ${JSON.stringify(body)}\n\n`)
+        }
       }
       return new Response('Event sent', {status: 200})
     }
