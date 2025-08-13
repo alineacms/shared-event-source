@@ -1,12 +1,8 @@
-declare global {
-  var clients:
-    | Set<{controller: ReadableStreamDefaultController<string>}>
-    | undefined
-}
+const connectedClients = new Set<{
+  controller: ReadableStreamDefaultController<string>
+}>()
 
 export async function handler(request: Request): Promise<Response> {
-  globalThis.clients ??= new Set()
-  const clients = globalThis.clients
   const url = new URL(request.url)
 
   if (url.pathname === '/sse') {
@@ -14,10 +10,10 @@ export async function handler(request: Request): Promise<Response> {
       const stream = new ReadableStream({
         start(controller) {
           const client = {controller}
-          clients.add(client)
+          connectedClients.add(client)
 
           request.signal.addEventListener('abort', () => {
-            clients.delete(client)
+            connectedClients.delete(client)
           })
 
           controller.enqueue('data: Connected\n\n')
@@ -33,7 +29,7 @@ export async function handler(request: Request): Promise<Response> {
       })
     } else if (request.method === 'POST') {
       const body = JSON.parse(await request.text())
-      for (const client of clients) {
+      for (const client of connectedClients) {
         client.controller.enqueue(`data: ${JSON.stringify(body)}\n\n`)
       }
       return new Response('Event sent', {status: 200})
