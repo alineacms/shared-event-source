@@ -15,6 +15,38 @@ interface BroadcastMessage {
 
 const noop: any = Function.prototype
 
+export interface SharedEventSource extends EventTarget {
+  addEventListener<K extends keyof EventSourceEventMap>(
+    type: K,
+    listener: (this: EventSource, ev: EventSourceEventMap[K]) => any,
+    options?: boolean | AddEventListenerOptions
+  ): void
+  addEventListener(
+    type: string,
+    listener: (this: EventSource, event: MessageEvent) => any,
+    options?: boolean | AddEventListenerOptions
+  ): void
+  addEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions
+  ): void
+  removeEventListener<K extends keyof EventSourceEventMap>(
+    type: K,
+    listener: (this: EventSource, ev: EventSourceEventMap[K]) => any,
+    options?: boolean | EventListenerOptions
+  ): void
+  removeEventListener(
+    type: string,
+    listener: (this: EventSource, event: MessageEvent) => any,
+    options?: boolean | EventListenerOptions
+  ): void
+  removeEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | EventListenerOptions
+  ): void
+}
 /**
  * A class that mimics the standard EventSource API but uses a BroadcastChannel
  * and the Web Locks API to ensure only one actual EventSource connection is open
@@ -30,7 +62,7 @@ export class SharedEventSource extends EventTarget {
   readonly withCredentials: boolean
   readyState: 0 | 1 | 2
 
-  onerror: (event: ErrorEvent) => any = noop
+  onerror: (event: Event) => any = noop
   onmessage: (event: MessageEvent) => any = noop
   onopen: (event: Event) => any = noop
 
@@ -216,8 +248,8 @@ export class SharedEventSource extends EventTarget {
     }
 
     this.#channel.close()
-    this.onopen = <any>Function.prototype
-    this.onmessage = <any>Function.prototype
-    this.onerror = <any>Function.prototype
+    this.onopen = noop
+    this.onmessage = noop
+    this.onerror = noop
   }
 }

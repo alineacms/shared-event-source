@@ -47,7 +47,8 @@
         "noAssignInExpressions": "off",
         "noConfusingLabels": "off",
         "noExportsInTest": "off",
-        "noArrayIndexKey": "off"
+        "noArrayIndexKey": "off",
+        "noUnsafeDeclarationMerging": "off"
       },
       "a11y": {
         "noSvgWithoutTitle": "off",
