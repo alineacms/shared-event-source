@@ -28,9 +28,7 @@ eventSource.onmessage = event => {
   eventsList.appendChild(li)
 }
 
-eventSource.onerror = () => {
-  console.error('Connection error')
-}
+eventSource.onerror = console.error
 
 // Update tab status based on leadership
 const updateTabStatus = () => {
