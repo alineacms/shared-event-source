@@ -2,7 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/shared-event-source.svg)](https://badge.fury.io/js/shared-event-source)
 
-`shared-event-source` is a library that provides a shared EventSource connection across multiple browser tabs. It ensures that only one actual EventSource connection is open per URL, while other tabs receive events via a BroadcastChannel. This is particularly useful for reducing server load and ensuring consistent event delivery across tabs.
+`shared-event-source` is a library that provides a shared EventSource connection across multiple browser tabs. It ensures that only one actual EventSource connection is open per URL, while other tabs receive events via a BroadcastChannel. This is particularly useful to get around the browser limit of maximum 6 non HTTP/2 SSE connections per domain.
 
 ## Installation
 
