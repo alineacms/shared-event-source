@@ -1,4 +1,4 @@
-import {SharedEventSource} from '../index.ts'
+import {SharedEventSource} from '../src/index.ts'
 
 const eventSource = new SharedEventSource('/sse')
 

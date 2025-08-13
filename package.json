@@ -1,14 +1,21 @@
 {
   "name": "shared-event-source",
+  "version": "0.0.0",
+  "repository": "alineacms/shared-event-source",
   "module": "index.ts",
   "type": "module",
-  "private": true,
   "devDependencies": {
     "@biomejs/biome": "^2.1.4",
-    "@types/bun": "latest",
-    "vitest": "^3.2.4"
+    "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
   }
 }
