@@ -4,10 +4,9 @@ declare let self: ServiceWorkerGlobalScope
 
 // Listen for all fetch events.
 self.addEventListener('fetch', event => {
-  const {request} = event
-  const url = new URL(request.url)
-  if (url.pathname === '/') return
-  event.respondWith(handler(request))
+  handler(event.request).then(response => {
+    if (response.ok) event.respondWith(response)
+  })
 })
 
 // Force the waiting service worker to become the active service worker.
