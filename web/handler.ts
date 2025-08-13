@@ -1,6 +1,4 @@
-const connectedClients = new Set<{
-  controller: ReadableStreamDefaultController<string>
-}>()
+const connectedClients = new Set<ReadableStreamDefaultController<string>>()
 
 export async function handler(request: Request): Promise<Response> {
   const url = new URL(request.url)
@@ -9,11 +7,10 @@ export async function handler(request: Request): Promise<Response> {
     if (request.method === 'GET') {
       const stream = new ReadableStream({
         start(controller) {
-          const client = {controller}
-          connectedClients.add(client)
+          connectedClients.add(controller)
 
           request.signal.addEventListener('abort', () => {
-            connectedClients.delete(client)
+            connectedClients.delete(controller)
           })
 
           controller.enqueue('data: Connected\n\n')
@@ -29,9 +26,12 @@ export async function handler(request: Request): Promise<Response> {
       })
     } else if (request.method === 'POST') {
       const body = JSON.parse(await request.text())
-      for (const client of connectedClients) {
-        client.controller.enqueue(`data: ${JSON.stringify(body)}\n\n`)
+      for (const controller of connectedClients) {
+        controller.enqueue(`data: ${JSON.stringify(body)}\n\n`)
       }
+      console.log(
+        `Sent event: ${JSON.stringify(body)} to ${connectedClients.size} clients`
+      )
       return new Response('Event sent', {status: 200})
     }
   }
